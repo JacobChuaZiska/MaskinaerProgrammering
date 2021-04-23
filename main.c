@@ -1,5 +1,59 @@
 #include <stdio.h>
 #include <string.h>
+#include<stdlib.h>
+struct card {
+    int Rank;
+    char Suit;
+};
+struct Node  {
+    struct card data;
+    struct Node* next;
+    struct Node* prev;
+};
+
+struct Node* head; // global variable - pointer to head node.
+
+//Creates a new Node and returns pointer to it.
+struct Node* GetNewNode(struct card x) {
+    struct Node* newNode
+            = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = x;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+//Inserts a Node at the beginning of the linked list
+void insertAtStart(struct card x) {
+    struct Node* newNode = GetNewNode(x);
+    if(head == NULL) {
+        head = newNode;
+        return;
+    }
+    head->prev = newNode;
+    newNode->next = head;
+    head = newNode;
+}
+
+
+
+
+//Inserts a Node at the end of the linked list
+void insertAtEnd(struct card x) {
+    struct Node* temp = head;
+    struct Node* newNode = GetNewNode(x);
+    if(head == NULL) {
+        head = newNode;
+        return;
+    }
+    while(temp->next != NULL) temp = temp->next; // Go To last Node
+    temp->next = newNode;
+    newNode->prev = temp;
+}
+
+
+
+
 int writeFile(char name[]) {
     char text[4] = ".txt";
     int i;
