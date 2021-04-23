@@ -51,6 +51,47 @@ void insertAtEnd(struct card x) {
     newNode->prev = temp;
 }
 
+void Print() {
+    struct Node* temp = head;
+    while(temp != NULL) {
+        printf("%d",temp->data.Rank);
+        printf("%c ",temp->data.Suit);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+void defaultDeck(){
+    int rankCount;
+    int suitCount;
+    for (suitCount= 1; suitCount <=4;suitCount++){
+        for (rankCount = 1;rankCount<=13;rankCount++){
+            if (suitCount == 1) {
+                struct card cardx;
+                cardx.Rank = rankCount;
+                cardx.Suit = 'C';
+                insertAtStart(cardx);
+            }
+            if (suitCount ==2){
+                struct card cardx;
+                cardx.Rank = rankCount;
+                cardx.Suit = 'D';
+                insertAtStart(cardx);
+            }
+            if (suitCount ==3){
+                struct card cardx;
+                cardx.Rank = rankCount;
+                cardx.Suit = 'S';
+            }
+            if (suitCount ==4){
+                struct card cardx;
+                cardx.Rank = rankCount;
+                cardx.Suit = 'H';
+            }
+        }
+    }
+}
+
 
 
 
@@ -155,6 +196,8 @@ int commando() {
 
 
 int main() {
+    defaultDeck();
+    Print();
 
     printf("Welcome to the game, how may i help you?\n");
     printf("Write LD to load a deck from a file\n");
