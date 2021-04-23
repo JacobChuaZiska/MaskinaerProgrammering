@@ -69,25 +69,29 @@ void defaultDeck(){
             if (suitCount == 1) {
                 struct card cardx;
                 cardx.Rank = rankCount;
-                cardx.Suit = 'C';
+                //Her viser den klør
+                cardx.Suit = 5;
                 insertAtEnd(cardx);
             }
             if (suitCount ==2){
                 struct card cardx;
                 cardx.Rank = rankCount;
-                cardx.Suit = 'D';
+                //Her viser den ruder
+                cardx.Suit = 4;
                 insertAtEnd(cardx);
             }
             if (suitCount ==3){
                 struct card cardx;
                 cardx.Rank = rankCount;
-                cardx.Suit = 'S';
+                //Her viser den spar
+                cardx.Suit = 6;
                 insertAtEnd(cardx);
             }
             if (suitCount ==4){
                 struct card cardx;
                 cardx.Rank = rankCount;
-                cardx.Suit = 'H';
+                //Her viser dem hjerte
+                cardx.Suit = 3;
                 insertAtEnd(cardx);
             }
         }
