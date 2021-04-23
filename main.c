@@ -14,10 +14,10 @@ struct Node  {
 struct Node* head; // global variable - pointer to head node.
 
 //Creates a new Node and returns pointer to it.
-struct Node* GetNewNode(struct card x) {
+struct Node* GetNewNode(struct card newCard) {
     struct Node* newNode
             = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = x;
+    newNode->data = newCard;
     newNode->prev = NULL;
     newNode->next = NULL;
     return newNode;
@@ -70,23 +70,25 @@ void defaultDeck(){
                 struct card cardx;
                 cardx.Rank = rankCount;
                 cardx.Suit = 'C';
-                insertAtStart(cardx);
+                insertAtEnd(cardx);
             }
             if (suitCount ==2){
                 struct card cardx;
                 cardx.Rank = rankCount;
                 cardx.Suit = 'D';
-                insertAtStart(cardx);
+                insertAtEnd(cardx);
             }
             if (suitCount ==3){
                 struct card cardx;
                 cardx.Rank = rankCount;
                 cardx.Suit = 'S';
+                insertAtEnd(cardx);
             }
             if (suitCount ==4){
                 struct card cardx;
                 cardx.Rank = rankCount;
                 cardx.Suit = 'H';
+                insertAtEnd(cardx);
             }
         }
     }
