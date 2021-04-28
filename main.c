@@ -2,8 +2,8 @@
 #include <string.h>
 #include<stdlib.h>
 struct card {
-    int Rank;
-    char Suit;
+    int rank;
+    char suit;
 };
 struct Node  {
     struct card data;
@@ -54,44 +54,43 @@ void insertAtEnd(struct card x) {
 void Print() {
     struct Node* temp = head;
     while(temp != NULL) {
-        printf("%d",temp->data.Rank);
-        printf("%c ",temp->data.Suit);
+        printf("%d",temp->data.rank);
+        printf("%c ",temp->data.suit);
         temp = temp->next;
     }
     printf("\n");
 }
+
+
 
 void defaultDeck(){
     int rankCount;
     int suitCount;
     for (suitCount= 1; suitCount <=4;suitCount++){
         for (rankCount = 1;rankCount<=13;rankCount++){
+
             if (suitCount == 1) {
                 struct card cardx;
-                cardx.Rank = rankCount;
-                //Her viser den klør
-                cardx.Suit = 5;
+                cardx.rank = rankCount;
+                cardx.suit = 'C';
                 insertAtEnd(cardx);
             }
             if (suitCount ==2){
                 struct card cardx;
-                cardx.Rank = rankCount;
-                //Her viser den ruder
-                cardx.Suit = 4;
+                cardx.rank = rankCount;
+                cardx.suit = 'D';
                 insertAtEnd(cardx);
             }
             if (suitCount ==3){
                 struct card cardx;
-                cardx.Rank = rankCount;
-                //Her viser den spar
-                cardx.Suit = 6;
+                cardx.rank = rankCount;
+                cardx.suit = 'S';
                 insertAtEnd(cardx);
             }
             if (suitCount ==4){
                 struct card cardx;
-                cardx.Rank = rankCount;
-                //Her viser dem hjerte
-                cardx.Suit = 3;
+                cardx.rank = rankCount;
+                cardx.suit = 'H';
                 insertAtEnd(cardx);
             }
         }
@@ -100,25 +99,67 @@ void defaultDeck(){
 
 
 
-
 int writeFile(char name[]) {
     char text[4] = ".txt";
-    int i;
-    char theLinkedList[104];
     strncat(name,text,4);//Tilføjer text til name
     FILE *fp;
     fp = fopen(name, "w"); //laver en fil der heller filename, og vælger w for at kunne skrive i den.
     //Med w writer vi, den overskriver altså det vi har i den fil der hedder filename.
-    fputs("Bare en lille test\n", fp);
-    fputs("Virker det?\n", fp);
-    fputs("Fuck ja det virker\n", fp);
+    fputs("Test\n", fp);
 
-    //Jeg tror dog vi skal bruge den her, ellers skal vi skrive 52 linjer kode:
 
-    //for (i = 0; theLinkedList[i] != EOF; i++) {
-        /* write to file using fputc() function */
-     //   fputc(theLinkedList[i], fp);
-    //}
+        struct Node* temp = head;
+
+        while(temp != NULL) {;
+        //Det er ikke muligt at parse en integer til en textfil, hvis textfilen også skal indeholde strings. Så vi erstatter integeren med den tilsvarende rank.
+            switch (temp->data.rank) {
+                case 1:
+                    fputs("A",fp); break;
+                case 2:
+                    fputs("2",fp); break;
+                case 3:
+                    fputs("3",fp); break;
+                case 4:
+                    fputs("4",fp); break;
+                case 5:
+                    fputs("5",fp); break;
+                case 6:
+                    fputs("6",fp); break;
+                case 7:
+                    fputs("7",fp); break;
+                case 8:
+                    fputs("8",fp); break;
+                case 9:
+                    fputs("9",fp); break;
+                case 10:
+                    fputs("10",fp); break;
+                case 11:
+                    fputs("J",fp); break;
+                case 12:
+                    fputs("D",fp); break;
+                case 13:
+                    fputs("K",fp); break;
+            }
+                fputs(&temp->data.suit, fp);
+                fputs("\n", fp);
+                temp = temp->next;
+        }
+        printf("\n");
+
+        /*
+    char kort[52];
+    for (int i = 0; i < 52; ++i) {
+        struct Node* temp = head;
+        while(temp != NULL) {
+            kort[0] = ("%d",temp->data.rank);
+            printf("%c ",temp->data.suit);
+            temp = temp->next;
+        }
+        printf("\n");
+
+    }
+         */
+
 
 
     fclose(fp); //lukker for filen man skriver i
@@ -192,7 +233,9 @@ int commando() {
         //eller bare bruge det current deck, som jeg ikke ved hvad indeholder, hvis ikke brugeren har loaded er kortsæt først... Tror bare det
         //er et kortsæt der ikke er blandet.
         printf("the fuck is this: %x", i);
-
+        commando();
+    } else if (strcmp(command, "Pr") == 0) {
+        Print();
         commando();
     } else {
         printf("You have to type one of the commands for the game\n");
@@ -205,6 +248,18 @@ int main() {
     defaultDeck();
     Print();
 
+    // Calling an Insert and printing list both in forward as well as reverse direction.
+   /*
+    struct card card1;
+    card1.rank = '1';
+    card1.suit = 'A';
+    struct card card2;
+    card2.rank = '2';
+    card2.suit = 'A';
+
+    insertAtEnd(card1);
+    insertAtEnd(card2);
+    */
     printf("Welcome to the game, how may i help you?\n");
     printf("Write LD to load a deck from a file\n");
     printf("Write SD to save the deck to a file\n");
