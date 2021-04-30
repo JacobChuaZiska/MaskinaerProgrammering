@@ -97,6 +97,51 @@ void defaultDeck(){
     }
 }
 
+void splitDeckAndRiffleShuffle(struct Node*currentdeck, struct Node**split1Head, struct Node **split2Head){
+    int inputSplit = 20;
+    //Edge case
+    if (inputSplit < 2)
+    {
+        *split1Head = currentdeck;
+        *split2Head = NULL;
+        return;
+    }
+    struct Node* current = currentdeck;
+
+    int splitPosition = (inputSplit - 1) / 2;
+    for (int splitIncrement = 0; splitIncrement < splitPosition; splitIncrement++) {
+        current = current->next;
+    }
+
+    // Now cut at current
+    *split1Head = currentdeck;
+    *split2Head = current->next;
+    current->next = NULL;
+
+    struct Node* temp1 = *split1Head;
+    struct Node* temp2 = *split2Head;
+    while (temp1 && temp2 != NULL) {
+        printf("%d",temp2->data.rank);
+        printf("%c ",temp2->data.suit);
+        struct card card;
+        card.rank = temp1->data.rank;
+        card.suit = temp1->data.suit;
+        insertAtEnd(card);
+        temp1 = temp1->next;
+        card.rank = temp2->data.rank;
+        card.suit = temp2->data.suit;
+        insertAtEnd(card);
+        temp2 = temp2->next;
+        split1Head = temp1;
+        split2Head = temp2;
+        if(temp1 = NULL){
+            printf("s","temp1 er Null");
+        } else if (temp2 = NULL) {
+            printf("s", "temp2 er Null");
+        }
+    }
+}
+
 
 
 int writeFile(char name[]) {
@@ -110,7 +155,7 @@ int writeFile(char name[]) {
 
         struct Node* temp = head;
 
-        while(temp != NULL) {;
+        while(temp != NULL) {
         //Det er ikke muligt at parse en integer til en textfil, hvis textfilen også skal indeholde strings. Så vi erstatter integeren med den tilsvarende rank.
             switch (temp->data.rank) {
                 case 1:
@@ -140,7 +185,16 @@ int writeFile(char name[]) {
                 case 13:
                     fputs("K",fp); break;
             }
-                fputs(&temp->data.suit, fp);
+            switch (temp->data.suit) {
+                case 'C':
+                    fputs("C",fp); break;
+                case 'D':
+                    fputs("D", fp); break;
+                case 'S':
+                    fputs("S", fp); break;
+                case 'H':
+                    fputs("H", fp); break;
+            }
                 fputs("\n", fp);
                 temp = temp->next;
         }
@@ -165,31 +219,76 @@ int writeFile(char name[]) {
     fclose(fp); //lukker for filen man skriver i
     return 0;
 }
+int dronningEllerDiamond=0;
+
+int readFileSwitch(char c){
+    struct card cardX;
+    switch (c) {
+        case 'A':
+            cardX.rank = 1; break;
+        case '2':
+            cardX.rank = 2; break;
+        case '3':
+            cardX.rank = 3; break;
+        case '4':
+            cardX.rank = 4; break;
+        case '5':
+            cardX.rank = 5; break;
+        case '6':
+            cardX.rank = 6; break;
+        case '7':
+            cardX.rank = 7; break;
+        case '8':
+            cardX.rank = 8; break;
+        case '9':
+            cardX.rank = 9; break;
+        case '1':
+            cardX.rank = 10; break;
+        case '0':
+            //hvis 1 er en case, så kan det kun være 10. Så skal næste char, altså 0, ikke noteres.
+            break;
+        case 'J':
+            cardX.rank = 11; break;
+        case 'K':
+            cardX.rank = 12; break;
+        case 'D': {;
+            if(dronningEllerDiamond==0) {
+                cardX.rank = 13;
+                dronningEllerDiamond++;
+                break;
+            } else if (dronningEllerDiamond==1){
+                cardX.suit = 'D';
+                dronningEllerDiamond--;
+                break;
+            }
+            case 'S':
+                cardX.suit = 'S';
+        }
+            break;
+        case 'H':
+            cardX.rank = 'H'; break;
+        case 'C':
+            cardX.rank = 'S'; break;
+    }
+    struct Node* newNode = GetNewNode(cardX);
+
+
+
+}
 
 int readFile(char name[]){
     char text[4] = ".txt";
     strncat(name,text,4);//Tilføjer text til name
     FILE * file_pointer;
-    char buffer[30], c;
-
-    file_pointer = fopen(name, "r");
-    printf("----read a line----\n");
-    fgets(buffer, 50, file_pointer);
-    printf("%s\n", buffer);
-
-    printf("----read and parse data----\n");
-    file_pointer = fopen(name, "r"); //reset the pointer
-    char str1[10], str2[10], str3[20], str4[10];
-    fscanf(file_pointer, "%s %s %s %s", str1, str2, str3, str4);
-    printf("Read String1 |%s|\n", str1);
-    printf("Read String2 |%s|\n", str2);
-    printf("Read String3 |%s|\n", str3);
-    printf("Read String4 |%s|\n", str4);
-
+    char c;
+    //Åbner filen med det navn du kom med med fopen.
     printf("----read the entire file----\n");
 
     file_pointer = fopen(name, "r"); //reset the pointer
-    while ((c = getc(file_pointer)) != EOF) printf("%c", c);
+    while ((c = getc(file_pointer)) != EOF) {
+        readFileSwitch(c);
+        printf("%c", c);
+    }
     fclose(file_pointer);
     return 0;
 }
