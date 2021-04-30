@@ -11,92 +11,117 @@ struct Node  {
     struct Node* prev;
 };
 
-struct Node* head; // global variable - pointer to head node.
+// struct Node* head; // global variable - pointer to head node.
+//Vi vil altid læse fra head, derfor kalder vi den for head.
 
-//Creates a new Node and returns pointer to it.
-struct Node* GetNewNode(struct card newCard) {
-    struct Node* newNode
-            = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = newCard;
-    newNode->prev = NULL;
-    newNode->next = NULL;
-    return newNode;
+/* Given a reference (pointer to pointer) to the head of a list
+   and an int, inserts a new node on the front of the list. */
+void push(struct Node** head_ref, int new_data_rank, char new_data_suit)
+{
+    /* 1. allocate node */
+    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+
+    /* 2. put in the data  */
+    new_node->data.rank = new_data_rank;
+    new_node->data.suit = new_data_suit;
+
+    /* 3. Make next of new node as head and previous as NULL */
+    new_node->next = (*head_ref);
+    new_node->prev = NULL;
+
+    /* 4. change prev of head node to new node */
+    if ((*head_ref) != NULL)
+        (*head_ref)->prev = new_node;
+
+    /* 5. move the head to point to the new node */
+    (*head_ref) = new_node;
 }
-
-//Inserts a Node at the beginning of the linked list
-void insertAtStart(struct card x) {
-    struct Node* newNode = GetNewNode(x);
-    if(head == NULL) {
-        head = newNode;
-        return;
-    }
-    head->prev = newNode;
-    newNode->next = head;
-    head = newNode;
-}
-
 
 
 
 //Inserts a Node at the end of the linked list
-void insertAtEnd(struct card x) {
-    struct Node* temp = head;
-    struct Node* newNode = GetNewNode(x);
-    if(head == NULL) {
-        head = newNode;
+/* Given a node as prev_node, insert a new node after the given node */
+//Altså indsætte midt inde mellem to noder.
+void insertMiddleOf(struct Node* prev_node, int new_data_rank, char new_data_suit)
+{
+    /*1. check if the given prev_node is NULL */
+    if (prev_node == NULL) {
+        printf("the given previous node cannot be NULL");
         return;
     }
-    while(temp->next != NULL) temp = temp->next; // Go To last Node
-    temp->next = newNode;
-    newNode->prev = temp;
+
+    /* 2. allocate new node */
+    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+
+    /* 3. put in the data  */
+    new_node->data.rank = new_data_rank;
+    new_node->data.suit = new_data_suit;
+    /* 4. Make next of new node as next of prev_node */
+    new_node->next = prev_node->next;
+
+    /* 5. Make the next of prev_node as new_node */
+    prev_node->next = new_node;
+
+    /* 6. Make prev_node as previous of new_node */
+    new_node->prev = prev_node;
+
+    /* 7. Change previous of new_node's next node */
+    if (new_node->next != NULL)
+        new_node->next->prev = new_node;
 }
 
-void Print() {
-    struct Node* temp = head;
-    while(temp != NULL) {
-        printf("%d",temp->data.rank);
-        printf("%c ",temp->data.suit);
-        temp = temp->next;
+/* Given a reference (pointer to pointer) to the head
+   of a DLL and an int, appends a new node at the end  */
+void insertAtEnd(struct Node** head_ref, struct card c)
+{
+    /* 1. allocate node */
+    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+
+    struct Node* last = *head_ref; /* used in step 5*/
+
+    /* 2. put in the data  */
+    new_node->data.rank = c.rank;
+    new_node->data.suit = c.suit;
+
+    /* 3. This new node is going to be the last node, so
+          make next of it as NULL*/
+    new_node->next = NULL;
+
+    /* 4. If the Linked List is empty, then make the new
+          node as head */
+    if (*head_ref == NULL) {
+        new_node->prev = NULL;
+        *head_ref = new_node;
+        return;
+    }
+
+    /* 5. Else traverse till the last node */
+    while (last->next != NULL)
+        last = last->next;
+
+    /* 6. Change the next of last node */
+    last->next = new_node;
+
+    /* 7. Make last node as previous of new node */
+    new_node->prev = last;
+
+    return;
+}
+
+
+void Print(struct Node* node) {
+
+    while (node != NULL) {
+        printf(" %d", node->data.rank);
+        printf("%c ", node->data.suit);
+        printf("\n");
+        node = node->next;
     }
     printf("\n");
 }
 
 
-
-void defaultDeck(){
-    int rankCount;
-    int suitCount;
-    for (suitCount= 1; suitCount <=4;suitCount++){
-        for (rankCount = 1;rankCount<=13;rankCount++){
-
-            if (suitCount == 1) {
-                struct card cardx;
-                cardx.rank = rankCount;
-                cardx.suit = 'C';
-                insertAtEnd(cardx);
-            }
-            if (suitCount ==2){
-                struct card cardx;
-                cardx.rank = rankCount;
-                cardx.suit = 'D';
-                insertAtEnd(cardx);
-            }
-            if (suitCount ==3){
-                struct card cardx;
-                cardx.rank = rankCount;
-                cardx.suit = 'S';
-                insertAtEnd(cardx);
-            }
-            if (suitCount ==4){
-                struct card cardx;
-                cardx.rank = rankCount;
-                cardx.suit = 'H';
-                insertAtEnd(cardx);
-            }
-        }
-    }
-}
-
+/*
 void splitDeckAndRiffleShuffle(struct Node*currentdeck, struct Node**split1Head, struct Node **split2Head){
     int inputSplit = 20;
     //Edge case
@@ -141,23 +166,29 @@ void splitDeckAndRiffleShuffle(struct Node*currentdeck, struct Node**split1Head,
         }
     }
 }
+ */
 
 
 
-int writeFile(char name[]) {
+int writeFile(char name[], struct Node* node) {
     char text[4] = ".txt";
     strncat(name,text,4);//Tilføjer text til name
     FILE *fp;
     fp = fopen(name, "w"); //laver en fil der heller filename, og vælger w for at kunne skrive i den.
     //Med w writer vi, den overskriver altså det vi har i den fil der hedder filename.
     fputs("Test\n", fp);
-
-
-        struct Node* temp = head;
-
-        while(temp != NULL) {
+    printf("\n");
+/*
+    //Vi skal hen til start noden.
+    while (node->prev!=NULL){
+        node = node->prev;
+    }
+*/
+    while(node != NULL) {
+        printf(" %d", node->data.rank);
+        printf("%c ", node->data.suit);
         //Det er ikke muligt at parse en integer til en textfil, hvis textfilen også skal indeholde strings. Så vi erstatter integeren med den tilsvarende rank.
-            switch (temp->data.rank) {
+            switch (node->data.rank) {
                 case 1:
                     fputs("A",fp); break;
                 case 2:
@@ -185,7 +216,7 @@ int writeFile(char name[]) {
                 case 13:
                     fputs("K",fp); break;
             }
-            switch (temp->data.suit) {
+            switch (node->data.suit) {
                 case 'C':
                     fputs("C",fp); break;
                 case 'D':
@@ -196,32 +227,22 @@ int writeFile(char name[]) {
                     fputs("H", fp); break;
             }
                 fputs("\n", fp);
-                temp = temp->next;
+            //Pege på den næste node, som skal printes
+                node = node->next;
         }
         printf("\n");
-
-        /*
-    char kort[52];
-    for (int i = 0; i < 52; ++i) {
-        struct Node* temp = head;
-        while(temp != NULL) {
-            kort[0] = ("%d",temp->data.rank);
-            printf("%c ",temp->data.suit);
-            temp = temp->next;
-        }
-        printf("\n");
-
-    }
-         */
-
-
 
     fclose(fp); //lukker for filen man skriver i
     return 0;
 }
-int dronningEllerDiamond=0;
 
-int readFileSwitch(char c){
+
+
+int dronningEllerDiamond=0;
+int suitOrNot=0;
+int rank=0;
+
+char readFileSwitch(char c, struct Node* node){
     struct card cardX;
     switch (c) {
         case 'A':
@@ -251,7 +272,7 @@ int readFileSwitch(char c){
             cardX.rank = 11; break;
         case 'K':
             cardX.rank = 12; break;
-        case 'D': {;
+        case 'D':
             if(dronningEllerDiamond==0) {
                 cardX.rank = 13;
                 dronningEllerDiamond++;
@@ -259,21 +280,26 @@ int readFileSwitch(char c){
             } else if (dronningEllerDiamond==1){
                 cardX.suit = 'D';
                 dronningEllerDiamond--;
+                suitOrNot=+1;
                 break;
             }
-            case 'S':
-                cardX.suit = 'S';
-        }
-            break;
+        case 'S':
+            cardX.suit = 'S';
+            suitOrNot=+1; break;
         case 'H':
-            cardX.rank = 'H'; break;
+            cardX.suit = 'H';
+            suitOrNot=+1; break;
         case 'C':
-            cardX.rank = 'S'; break;
+            cardX.suit = 'S';
+            suitOrNot=+1; break;
     }
-    struct Node* newNode = GetNewNode(cardX);
+    rank = cardX.rank;
 
-
-
+    if (suitOrNot==1){
+        insertAtEnd(&node, cardX);
+        suitOrNot--;
+        cardX.rank = 0;
+    }
 }
 
 int readFile(char name[]){
@@ -281,19 +307,20 @@ int readFile(char name[]){
     strncat(name,text,4);//Tilføjer text til name
     FILE * file_pointer;
     char c;
+    struct Node* new_node = NULL;
     //Åbner filen med det navn du kom med med fopen.
     printf("----read the entire file----\n");
 
     file_pointer = fopen(name, "r"); //reset the pointer
     while ((c = getc(file_pointer)) != EOF) {
-        readFileSwitch(c);
+        readFileSwitch(c, new_node);
         printf("%c", c);
     }
     fclose(file_pointer);
     return 0;
 }
 
-int commando() {
+int commando(struct Node* node) {
     char quit[] = "QQ";
     char quitGame[] = "Q";
     char name[20];
@@ -312,40 +339,78 @@ int commando() {
         scanf("%s", name);
         printf("The name of the file will be: %s.txt\n", name);
         printf("Bare en test: %c", *name);
-        writeFile(name);
-        commando();
+        writeFile(name, node);
+        commando(node);
     } else if (strcmp(command, load) == 0) {
         printf("Time to load a file to the game!\n");
         printf("Enter the name of the file you want to load. No space, no .txt or anything. Just the name of the file:\n");
         scanf("%s", name);
         printf("The name of the file you're loading will be: %s.txt\n", name);
         readFile(name);
-        commando();
+        commando(node);
     } else if (strcmp(command, quitGame) == 0) {
         printf("You have chosen to quit the current game you're playing.\nYour card deck will be remembered, and you will restart the game if you enter 'P'\n");
         //Basically skal vi bare have det kortsæt som vi brugte til at starte spillet med, klar til at blive aktiveret igen med, hvis
         //brugeren vælger at trykke på P.
-        commando();
+        commando(node);
     } else if (strcmp(command, startGame) == 0) {
         printf("You have startet the game!\n");
         //Benytter sig af den linked list kortsæt som enten allerede er i linked list(efter brugeren f.eks. allerede har spillet, og så tastet Q, men vil genstarte spille)
         //eller bare bruge det current deck, som jeg ikke ved hvad indeholder, hvis ikke brugeren har loaded er kortsæt først... Tror bare det
         //er et kortsæt der ikke er blandet.
         printf("the fuck is this: %x", i);
-        commando();
+        commando(node);
     } else if (strcmp(command, "Pr") == 0) {
-        Print();
-        commando();
+        Print(node);
+        commando(node);
     } else {
         printf("You have to type one of the commands for the game\n");
-        commando();
+        commando(node);
     }
 }
 
 
 int main() {
-    defaultDeck();
-    Print();
+    /* Start with the empty list */
+    //Initialisere en list som indeholder default kortsættet.
+    //Af en eller anden grund, kunne jeg ikke lige få det til at fungere med, at lave kortsættet i en helt anden funktion.
+    //Så genkender den ikke noderne du skriver det i.
+    struct Node* node = NULL;
+    int rankCount;
+    int suitCount;
+    for (suitCount= 1; suitCount <=4;suitCount++){
+        for (rankCount = 1;rankCount<=13;rankCount++){
+
+            if (suitCount == 1) {
+                struct card cardx;
+                cardx.rank = rankCount;
+                cardx.suit = 'C';
+                insertAtEnd(&node, cardx);
+            }
+            if (suitCount ==2){
+                struct card cardx;
+                cardx.rank = rankCount;
+                cardx.suit = 'D';
+                insertAtEnd(&node, cardx);
+            }
+            if (suitCount ==3){
+                struct card cardx;
+                cardx.rank = rankCount;
+                cardx.suit = 'S';
+                insertAtEnd(&node, cardx);
+            }
+            if (suitCount ==4){
+                struct card cardx;
+                cardx.rank = rankCount;
+                cardx.suit = 'H';
+                insertAtEnd(&node, cardx);
+            }
+        }
+    }
+
+    Print(node);
+
+    //MAN SKAL KUN LAVE ÉN NODE, ELLERS GÅR DET GALT.
 
     // Calling an Insert and printing list both in forward as well as reverse direction.
    /*
@@ -362,7 +427,7 @@ int main() {
     printf("Welcome to the game, how may i help you?\n");
     printf("Write LD to load a deck from a file\n");
     printf("Write SD to save the deck to a file\n");
-    commando();
+    commando(node);
 
 
 }
