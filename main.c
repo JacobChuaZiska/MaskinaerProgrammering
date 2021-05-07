@@ -11,8 +11,6 @@ struct Node  {
     struct Node* prev;
 };
 
-// struct Node* head; // global variable - pointer to head node.
-//Vi vil altid læse fra head, derfor kalder vi den for head.
 
 /* Given a reference (pointer to pointer) to the head of a list
    and an int, inserts a new node on the front of the list. */
@@ -139,55 +137,6 @@ void Print(struct Node* node) {
 }
 
 
-/*
-void splitDeckAndRiffleShuffle(struct Node*currentdeck, struct Node**split1Head, struct Node **split2Head){
-    int inputSplit = 20;
-    //Edge case
-    if (inputSplit < 2)
-    {
-        *split1Head = currentdeck;
-        *split2Head = NULL;
-        return;
-    }
-    struct Node* current = currentdeck;
-
-    int splitPosition = (inputSplit - 1) / 2;
-    for (int splitIncrement = 0; splitIncrement < splitPosition; splitIncrement++) {
-        current = current->next;
-    }
-
-    // Now cut at current
-    *split1Head = currentdeck;
-    *split2Head = current->next;
-    current->next = NULL;
-
-    struct Node* temp1 = *split1Head;
-    struct Node* temp2 = *split2Head;
-    while (temp1 && temp2 != NULL) {
-        printf("%d",temp2->data.rank);
-        printf("%c ",temp2->data.suit);
-        struct card card;
-        card.rank = temp1->data.rank;
-        card.suit = temp1->data.suit;
-        insertAtEnd(card);
-        temp1 = temp1->next;
-        card.rank = temp2->data.rank;
-        card.suit = temp2->data.suit;
-        insertAtEnd(card);
-        temp2 = temp2->next;
-        split1Head = temp1;
-        split2Head = temp2;
-        if(temp1 = NULL){
-            printf("s","temp1 er Null");
-        } else if (temp2 = NULL) {
-            printf("s", "temp2 er Null");
-        }
-    }
-}
- */
-
-
-
 int writeFile(char name[], struct Node* node) {
     char text[4] = ".txt";
     strncat(name,text,4);//Tilføjer text til name
@@ -196,12 +145,7 @@ int writeFile(char name[], struct Node* node) {
     //Med w writer vi, den overskriver altså det vi har i den fil der hedder filename.
    // fputs("Test\n", fp);
     printf("\n");
-/*
-    //Vi skal hen til start noden.
-    while (node->prev!=NULL){
-        node = node->prev;
-    }
-*/
+
     while(node != NULL) {
         printf(" %d", node->data.rank);
         printf("%c ", node->data.suit);
