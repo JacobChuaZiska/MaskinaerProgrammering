@@ -194,7 +194,7 @@ int writeFile(char name[], struct Node* node) {
     FILE *fp;
     fp = fopen(name, "w"); //laver en fil der heller filename, og vælger w for at kunne skrive i den.
     //Med w writer vi, den overskriver altså det vi har i den fil der hedder filename.
-    fputs("Test\n", fp);
+   // fputs("Test\n", fp);
     printf("\n");
 /*
     //Vi skal hen til start noden.
@@ -230,7 +230,7 @@ int writeFile(char name[], struct Node* node) {
                 case 11:
                     fputs("J",fp); break;
                 case 12:
-                    fputs("D",fp); break;
+                    fputs("Q",fp); break;
                 case 13:
                     fputs("K",fp); break;
             }
@@ -253,14 +253,8 @@ int writeFile(char name[], struct Node* node) {
     fclose(fp); //lukker for filen man skriver i
     return 0;
 }
-
-
-
-int dronningEllerDiamond=0;
-int suitOrNot=0;
-int rank=0;
-
-char readFileSwitch(char c, struct Node* node){
+/*
+struct Node * readFileSwitch(char c, struct Node* node){
     struct card cardX;
     switch (c) {
         case 'A':
@@ -318,9 +312,13 @@ char readFileSwitch(char c, struct Node* node){
         suitOrNot--;
         cardX.rank = 0;
     }
+    return node;
 }
+ */
+int dronningEllerDiamond=0;
+int suitOrNot=0;
 
-int readFile(char name[]){
+struct Node * readFile(char name[]){
     char text[4] = ".txt";
     strncat(name,text,4);//Tilføjer text til name
     FILE * file_pointer;
@@ -331,14 +329,63 @@ int readFile(char name[]){
 
     file_pointer = fopen(name, "r"); //reset the pointer
     while ((c = getc(file_pointer)) != EOF) {
-        readFileSwitch(c, new_node);
+
         printf("%c", c);
+
+        struct card cardX;
+        switch (c) {
+            case 'A':
+                cardX.rank = 1; break;
+            case '2':
+                cardX.rank = 2; break;
+            case '3':
+                cardX.rank = 3; break;
+            case '4':
+                cardX.rank = 4; break;
+            case '5':
+                cardX.rank = 5; break;
+            case '6':
+                cardX.rank = 6; break;
+            case '7':
+                cardX.rank = 7; break;
+            case '8':
+                cardX.rank = 8; break;
+            case '9':
+                cardX.rank = 9; break;
+            case '1':
+                cardX.rank = 10; break;
+            case '0':
+                //hvis 1 er en case, så kan det kun være 10. Så skal næste char, altså 0, ikke noteres.
+                break;
+            case 'J':
+                cardX.rank = 11; break;
+            case 'Q':
+                cardX.rank = 12;break;
+            case 'K':
+                cardX.rank = 13; break;
+            case 'S':
+                cardX.suit = 'S';
+                suitOrNot=1; break;
+            case 'H':
+                cardX.suit = 'H';
+                suitOrNot=1; break;
+            case 'C':
+                cardX.suit = 'C';
+                suitOrNot=1; break;
+            case 'D' :
+                cardX.suit = 'D';
+                suitOrNot=1; break;
+        }
+        if (suitOrNot==1){
+            insertAtEnd(&new_node, cardX);
+            suitOrNot=0;
+        }
     }
     fclose(file_pointer);
-    return 0;
+    return new_node;
 }
 
-int commando(struct Node* node) {
+int commando(struct Node* head) {
     char quit[] = "QQ";
     char quitGame[] = "Q";
     char name[20];
@@ -347,49 +394,52 @@ int commando(struct Node* node) {
     char save[] = "SD";
     char startGame[] = "P";
     int i = 100;
-    char deleteList[] = "DL";
+    char delete[] = "DL";
     scanf("%s", command);
     if (strcmp(command, quit) == 0) {
         printf("You have decided to quit the game. Hope to see you again soon!\n");
         return 0;
-    } else if (strcmp(command, deleteList)==0) {
-        printf("Deleting list");
-
+    } else if (strcmp(command, delete)==0) {
+        printf("Deleting list\n");
+        //Vi skal have adressen for noden, derfor benytter vi os af &
+        deleteList(&head);
+        commando(head);
     }  else if (strcmp(command, save) == 0) {
         printf("Time to save a file consisting of the deck!\n");
         printf("Enter name of the file your want to write. No space, no .txt or anything. Just the name:\n");
         scanf("%s", name);
         printf("The name of the file will be: %s.txt\n", name);
-        printf("Bare en test: %c", *name);
-        writeFile(name, node);
-        commando(node);
+
+        writeFile(name, head);
+        commando(head);
     } else if (strcmp(command, load) == 0) {
         printf("Time to load a file to the game!\n");
         printf("Enter the name of the file you want to load. No space, no .txt or anything. Just the name of the file:\n");
         scanf("%s", name);
         printf("The name of the file you're loading will be: %s.txt\n", name);
-        readFile(name);
-        commando(node);
+        deleteList(&head);
+        commando(readFile(name));
     } else if (strcmp(command, quitGame) == 0) {
         printf("You have chosen to quit the current game you're playing.\nYour card deck will be remembered, and you will restart the game if you enter 'P'\n");
         //Basically skal vi bare have det kortsæt som vi brugte til at starte spillet med, klar til at blive aktiveret igen med, hvis
         //brugeren vælger at trykke på P.
-        commando(node);
+        commando(head);
     } else if (strcmp(command, startGame) == 0) {
         printf("You have startet the game!\n");
         //Benytter sig af den linked list kortsæt som enten allerede er i linked list(efter brugeren f.eks. allerede har spillet, og så tastet Q, men vil genstarte spille)
         //eller bare bruge det current deck, som jeg ikke ved hvad indeholder, hvis ikke brugeren har loaded er kortsæt først... Tror bare det
         //er et kortsæt der ikke er blandet.
         printf("the fuck is this: %x", i);
-        commando(node);
+        commando(head);
     } else if (strcmp(command, "Pr") == 0) {
-        Print(node);
-        commando(node);
+        Print(head);
+        commando(head);
     } else {
         printf("You have to type one of the commands for the game\n");
-        commando(node);
+        commando(head);
     }
 }
+
 
 
 int main() {
@@ -397,7 +447,7 @@ int main() {
     //Initialisere en list som indeholder default kortsættet.
     //Af en eller anden grund, kunne jeg ikke lige få det til at fungere med, at lave kortsættet i en helt anden funktion.
     //Så genkender den ikke noderne du skriver det i.
-    struct Node* node = NULL;
+    struct Node* head = NULL;
     int rankCount;
     int suitCount;
     for (suitCount= 1; suitCount <=4;suitCount++){
@@ -407,49 +457,37 @@ int main() {
                 struct card cardx;
                 cardx.rank = rankCount;
                 cardx.suit = 'C';
-                insertAtEnd(&node, cardx);
+                insertAtEnd(&head, cardx);
             }
             if (suitCount ==2){
                 struct card cardx;
                 cardx.rank = rankCount;
                 cardx.suit = 'D';
-                insertAtEnd(&node, cardx);
+                insertAtEnd(&head, cardx);
             }
             if (suitCount ==3){
                 struct card cardx;
                 cardx.rank = rankCount;
                 cardx.suit = 'S';
-                insertAtEnd(&node, cardx);
+                insertAtEnd(&head, cardx);
             }
             if (suitCount ==4){
                 struct card cardx;
                 cardx.rank = rankCount;
                 cardx.suit = 'H';
-                insertAtEnd(&node, cardx);
+                insertAtEnd(&head, cardx);
             }
         }
     }
 
-    Print(node);
+    Print(head);
 
     //MAN SKAL KUN LAVE ÉN NODE, ELLERS GÅR DET GALT.
 
-    // Calling an Insert and printing list both in forward as well as reverse direction.
-   /*
-    struct card card1;
-    card1.rank = '1';
-    card1.suit = 'A';
-    struct card card2;
-    card2.rank = '2';
-    card2.suit = 'A';
-
-    insertAtEnd(card1);
-    insertAtEnd(card2);
-    */
     printf("Welcome to the game, how may i help you?\n");
     printf("Write LD to load a deck from a file\n");
     printf("Write SD to save the deck to a file\n");
-    commando(node);
+    commando(head);
 
 
 }
