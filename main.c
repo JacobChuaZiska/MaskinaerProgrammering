@@ -353,7 +353,7 @@ int commando(struct Node* node) {
         printf("You have decided to quit the game. Hope to see you again soon!\n");
         return 0;
     } else if (strcmp(command, deleteList)==0) {
-        printf("Deleting list")
+        printf("Deleting list");
 
     }  else if (strcmp(command, save) == 0) {
         printf("Time to save a file consisting of the deck!\n");
