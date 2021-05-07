@@ -197,69 +197,6 @@ int writeFile(char name[], struct Node* node) {
     fclose(fp); //lukker for filen man skriver i
     return 0;
 }
-/*
-struct Node * readFileSwitch(char c, struct Node* node){
-    struct card cardX;
-    switch (c) {
-        case 'A':
-            cardX.rank = 1; break;
-        case '2':
-            cardX.rank = 2; break;
-        case '3':
-            cardX.rank = 3; break;
-        case '4':
-            cardX.rank = 4; break;
-        case '5':
-            cardX.rank = 5; break;
-        case '6':
-            cardX.rank = 6; break;
-        case '7':
-            cardX.rank = 7; break;
-        case '8':
-            cardX.rank = 8; break;
-        case '9':
-            cardX.rank = 9; break;
-        case '1':
-            cardX.rank = 10; break;
-        case '0':
-            //hvis 1 er en case, så kan det kun være 10. Så skal næste char, altså 0, ikke noteres.
-            break;
-        case 'J':
-            cardX.rank = 11; break;
-        case 'K':
-            cardX.rank = 12; break;
-        case 'D':
-            if(dronningEllerDiamond==0) {
-                cardX.rank = 13;
-                dronningEllerDiamond++;
-                break;
-            } else if (dronningEllerDiamond==1){
-                cardX.suit = 'D';
-                dronningEllerDiamond--;
-                suitOrNot=+1;
-                break;
-            }
-        case 'S':
-            cardX.suit = 'S';
-            suitOrNot=+1; break;
-        case 'H':
-            cardX.suit = 'H';
-            suitOrNot=+1; break;
-        case 'C':
-            cardX.suit = 'S';
-            suitOrNot=+1; break;
-    }
-    rank = cardX.rank;
-
-    if (suitOrNot==1){
-        insertAtEnd(&node, cardX);
-        suitOrNot--;
-        cardX.rank = 0;
-    }
-    return node;
-}
- */
-int dronningEllerDiamond=0;
 int suitOrNot=0;
 
 struct Node * readFile(char name[]){
