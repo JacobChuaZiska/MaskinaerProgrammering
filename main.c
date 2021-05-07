@@ -37,6 +37,24 @@ void push(struct Node** head_ref, int new_data_rank, char new_data_suit)
     (*head_ref) = new_node;
 }
 
+/* Function to delete the entire linked list */
+void deleteList(struct Node** head_ref)
+{
+    /* deref head_ref to get the real head */
+    struct Node* current = *head_ref;
+    struct Node* next;
+
+    while (current != NULL)
+    {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+
+    /* deref head_ref to affect the real head back
+       in the caller. */
+    *head_ref = NULL;
+}
 
 
 //Inserts a Node at the end of the linked list
@@ -329,11 +347,15 @@ int commando(struct Node* node) {
     char save[] = "SD";
     char startGame[] = "P";
     int i = 100;
+    char deleteList[] = "DL";
     scanf("%s", command);
     if (strcmp(command, quit) == 0) {
         printf("You have decided to quit the game. Hope to see you again soon!\n");
         return 0;
-    } else if (strcmp(command, save) == 0) {
+    } else if (strcmp(command, deleteList)==0) {
+        printf("Deleting list")
+
+    }  else if (strcmp(command, save) == 0) {
         printf("Time to save a file consisting of the deck!\n");
         printf("Enter name of the file your want to write. No space, no .txt or anything. Just the name:\n");
         scanf("%s", name);
