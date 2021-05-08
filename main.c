@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include<stdlib.h>
+#include <sys/time.h>
+
 struct card {
     int rank;
     char suit;
@@ -137,6 +139,207 @@ void Print(struct Node* node) {
 }
 
 
+char whatCharRank(int rank) {
+    char charRank;
+    switch (rank) {
+        case 1:
+            charRank = '1';
+            break;
+        case 2:
+            charRank = '2';
+            break;
+        case 3:
+            charRank = '3';
+            break;
+        case 4:
+            charRank = '4';
+            break;
+        case 5:
+            charRank = '5';
+            break;
+        case 6:
+            charRank = '6';
+            break;
+        case 7:
+            charRank = '7';
+            break;
+        case 8:
+            charRank = '8';
+            break;
+        case 9:
+            charRank = '9';
+            break;
+            //10 er to characters, og vil derfor ikke kunne returneres som et 10 tal, men som et 1'tal. Dette skal huskes.
+        case 10:
+            charRank = 'T'; break;
+        case 11:
+            charRank = 'J';
+            break;
+        case 12:
+            charRank = 'Q';
+            break;
+        case 13:
+            charRank = 'K';
+            break;
+    }
+
+    return charRank;
+}
+
+
+int deleteNode(struct Node** head_ref, int keyRank, char keySuit) {
+
+    // Store head node
+    struct Node *temp = *head_ref;
+
+    // If head node itself holds the key to be deleted
+    //Key er randomly genereret, og representere hvilket kort der skal tages.
+    if (temp != NULL && temp->data.rank == keyRank && temp->data.suit == keySuit) {
+        *head_ref = temp->next; // Changed head
+        free(temp); // free old head
+       // printf("Det var den første node, og den blev derfor slettet\n");
+        return 1;
+    }
+
+    // Search for the key to be deleted, keep track of the
+    // previous node as we need to change 'prev->next'
+    //Den kører igennem hver eneste node og ser om dataen stemmer overens med det vi leder efter.
+    int tal = 0;
+
+    if (temp != NULL && temp->data.suit == keySuit){
+        while (temp->data.rank != keyRank) {
+            temp->prev = temp;
+            temp = temp->next;
+            if (temp== NULL){
+                break;
+            }
+            tal = 1;
+            printf("             Key rank: %d ____ Key suit %c\n", keyRank, keySuit);
+            printf("Den node du er ved lige nu: %d ____ %c\n", temp->data.rank, temp->data.suit);
+
+            if (temp!=NULL && temp->data.suit != keySuit) {
+                tal=0;
+                continue;
+            } else if (temp!=NULL && temp->data.suit == keySuit && temp->data.rank == keyRank){
+                tal=1;
+                break;
+            }
+        }
+    } else {
+        while (temp->data.suit != keySuit) {
+            temp->prev = temp;
+            temp = temp->next;
+            if (temp == NULL){
+                break;
+            }
+       //     printf("Key: %c, og du har:%c\n", keySuit, temp->data.suit);
+        }
+        if (temp!=NULL && temp->data.suit == keySuit) {
+            while (temp->data.rank != keyRank) {
+                temp->prev = temp;
+                temp = temp->next;
+                if (temp== NULL){
+                    break;
+                }
+          //      printf(" Key rank og suit: %d ____ %c\n", keyRank, keySuit);
+          //      printf("    Hvad du har    %d ____ %c\n\n", temp->data.rank, temp->data.suit);
+                if (temp!=NULL && temp->data.suit != keySuit) {
+                    tal=0;
+                    continue;
+                } else if (temp!=NULL && temp->data.suit == keySuit && temp->data.rank == keyRank){
+                    tal=1;
+                    break;
+                }
+            }
+        }
+    }
+    // Hvis while løkken ikke finder noden, så eksisterer den ikke i listen, og der printes bare en status string, og så hopper vi ud af deleteNode.
+    if (temp == NULL) {
+        //printf("Der er kommet en værdi ind, som ikke eksister i kortsættet\n");
+        return 0;
+    }
+
+    //Når den rigtige node er blevet fundet, så unlink det fra linked listen.
+    if (tal ==1){
+    temp->prev->next = temp->next;
+    free(temp); // Free memory
+    //printf("Du har hævet noden ud fra listen\n");
+    return 1;
+    } else {
+       // printf("Noden eksister desværre ikke i linked list, den er allerede bleve slettet\n");
+        return 0;
+    }
+}
+
+int randomRank(){
+     int keyRank;
+     time_t t;
+
+     /* Intializes random number generator */
+     srand((unsigned) time(&t));
+     /* Random numbers from 0 to 12 */
+     keyRank = rand() % 13;
+     keyRank +=1;
+
+    return keyRank;
+}
+
+char randomSuit(){
+    int nrSuit;
+    char keySuit;
+    time_t o;
+       srand((unsigned) time(&o));
+       /* Random numbers from 0 to 3 */
+       nrSuit = rand() % 4;
+       nrSuit +=1;
+
+        switch (nrSuit) {
+            case 1:
+            keySuit = 'S'; break;
+            case 2:
+                keySuit = 'H'; break;
+            case 3:
+                keySuit = 'D'; break;
+            case 4:
+                keySuit = 'C'; break;
+        }
+
+    return keySuit;
+}
+
+
+struct Node * ShuffleDeck(struct Node* node){
+    //https://www.tutorialspoint.com/c_standard_library/c_function_rand.htm
+    int keyRank, antal=1;
+    char keySuit;
+    struct Node* new_node = NULL;
+    while (node != NULL){
+        keyRank = randomRank();
+        keySuit = randomSuit();
+        //keyRank = 2;
+       //keySuit = 'C';
+
+        //Hvis du er i stand til at slette noden fra dit oprindelige kortsæt, så kan du tilføje det i det nye kortsæt.
+        int d = deleteNode(&node, keyRank, keySuit);
+        if (d==1){
+            printf("Du tilføjede kort nr. %d som var: %d%c\n", antal, keyRank, keySuit);
+            antal+=1;
+            struct card cardZ;
+            cardZ.rank = keyRank;
+            cardZ.suit = keySuit;
+            insertAtEnd(&new_node, cardZ);
+            node = node->next;
+        }
+
+     }
+    return new_node;
+}
+
+
+
+
+
+
 int writeFile(char name[], struct Node* node) {
     char text[4] = ".txt";
     strncat(name,text,4);//Tilføjer text til name
@@ -197,9 +400,10 @@ int writeFile(char name[], struct Node* node) {
     fclose(fp); //lukker for filen man skriver i
     return 0;
 }
-int suitOrNot=0;
+
 
 struct Node * readFile(char name[]){
+    int suitOrNot=0;
     char text[4] = ".txt";
     strncat(name,text,4);//Tilføjer text til name
     FILE * file_pointer;
@@ -276,10 +480,14 @@ int commando(struct Node* head) {
     char startGame[] = "P";
     int i = 100;
     char delete[] = "DL";
+    char shuffleDeck[] = "SR";
     scanf("%s", command);
     if (strcmp(command, quit) == 0) {
         printf("You have decided to quit the game. Hope to see you again soon!\n");
         return 0;
+    } else if (strcmp(command, shuffleDeck)==0){
+        printf("Shuffling deck\n");
+        commando(ShuffleDeck(head));
     } else if (strcmp(command, delete)==0) {
         printf("Deleting list\n");
         //Vi skal have adressen for noden, derfor benytter vi os af &
