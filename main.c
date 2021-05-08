@@ -16,14 +16,15 @@ struct Node  {
 
 /* Given a reference (pointer to pointer) to the head of a list
    and an int, inserts a new node on the front of the list. */
-void push(struct Node** head_ref, int new_data_rank, char new_data_suit)
+void push(struct Node** head_ref, struct card c)
 {
+
     /* 1. allocate node */
     struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
 
     /* 2. put in the data  */
-    new_node->data.rank = new_data_rank;
-    new_node->data.suit = new_data_suit;
+    new_node->data.rank = c.rank;
+    new_node->data.suit = c.suit;
 
     /* 3. Make next of new node as head and previous as NULL */
     new_node->next = (*head_ref);
@@ -57,10 +58,9 @@ void deleteList(struct Node** head_ref)
 }
 
 
-//Inserts a Node at the end of the linked list
 /* Given a node as prev_node, insert a new node after the given node */
 //Altså indsætte midt inde mellem to noder.
-void insertMiddleOf(struct Node* prev_node, int new_data_rank, char new_data_suit)
+void insertAfter(struct Node* prev_node, struct card c)
 {
     /*1. check if the given prev_node is NULL */
     if (prev_node == NULL) {
@@ -72,8 +72,8 @@ void insertMiddleOf(struct Node* prev_node, int new_data_rank, char new_data_sui
     struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
 
     /* 3. put in the data  */
-    new_node->data.rank = new_data_rank;
-    new_node->data.suit = new_data_suit;
+    new_node->data.rank = c.rank;
+    new_node->data.suit = c.suit;
     /* 4. Make next of new node as next of prev_node */
     new_node->next = prev_node->next;
 
@@ -187,7 +187,7 @@ char whatCharRank(int rank) {
 }
 
 
-int deleteNode(struct Node** head_ref, int keyRank, char keySuit) {
+void deleteNode(struct Node** head_ref, int keyRank, char keySuit) {
 
     // Store head node
     struct Node *temp = *head_ref;
@@ -198,7 +198,7 @@ int deleteNode(struct Node** head_ref, int keyRank, char keySuit) {
         *head_ref = temp->next; // Changed head
         free(temp); // free old head
        // printf("Det var den første node, og den blev derfor slettet\n");
-        return 1;
+        return;
     }
 
     // Search for the key to be deleted, keep track of the
@@ -214,8 +214,6 @@ int deleteNode(struct Node** head_ref, int keyRank, char keySuit) {
                 break;
             }
             tal = 1;
-            printf("             Key rank: %d ____ Key suit %c\n", keyRank, keySuit);
-            printf("Den node du er ved lige nu: %d ____ %c\n", temp->data.rank, temp->data.suit);
 
             if (temp!=NULL && temp->data.suit != keySuit) {
                 tal=0;
@@ -256,7 +254,7 @@ int deleteNode(struct Node** head_ref, int keyRank, char keySuit) {
     // Hvis while løkken ikke finder noden, så eksisterer den ikke i listen, og der printes bare en status string, og så hopper vi ud af deleteNode.
     if (temp == NULL) {
         //printf("Der er kommet en værdi ind, som ikke eksister i kortsættet\n");
-        return 0;
+        return;
     }
 
     //Når den rigtige node er blevet fundet, så unlink det fra linked listen.
@@ -264,24 +262,24 @@ int deleteNode(struct Node** head_ref, int keyRank, char keySuit) {
     temp->prev->next = temp->next;
     free(temp); // Free memory
     //printf("Du har hævet noden ud fra listen\n");
-    return 1;
+    return;
     } else {
        // printf("Noden eksister desværre ikke i linked list, den er allerede bleve slettet\n");
-        return 0;
+        return;
     }
 }
 
-int randomRank(){
-     int keyRank;
+int randomOneOrTwo(){
+     int oneOrTwo;
      time_t t;
 
      /* Intializes random number generator */
      srand((unsigned) time(&t));
-     /* Random numbers from 0 to 12 */
-     keyRank = rand() % 13;
-     keyRank +=1;
+     /* Random numbers from 0 to 99 */
+     oneOrTwo = rand() % 100;
+  //   int p = oneOrTwo %2;
 
-    return keyRank;
+    return oneOrTwo;
 }
 
 char randomSuit(){
@@ -310,26 +308,59 @@ char randomSuit(){
 
 struct Node * ShuffleDeck(struct Node* node){
     //https://www.tutorialspoint.com/c_standard_library/c_function_rand.htm
-    int keyRank, antal=1;
-    char keySuit;
+    int randomNumber, antal=1;
+    int tal = rand() %1000;
     struct Node* new_node = NULL;
     while (node != NULL){
-        keyRank = randomRank();
-        keySuit = randomSuit();
-        //keyRank = 2;
-       //keySuit = 'C';
 
+        /* Intializes random number generator */
+        srand(tal);
+        /* Random numbers from 0 to 99 */
+            randomNumber = rand() % 100;
+            tal+=randomNumber;
+
+//        randomNumber = randomOneOrTwo();
+
+        printf("Random nummer: %d\n", randomNumber);
+
+        //Går igennem alle kortene
+        struct card cardZ;
+        cardZ.rank = node->data.rank;
+        cardZ.suit = node->data.suit;
+
+        if (randomNumber > 66 && randomNumber <= 99 && new_node!=NULL) {
+            printf("Du tilføjede kort nr. %d som var: %d%c på 2. plads\n", antal, cardZ.rank, cardZ.suit);
+            antal+=1;
+            insertAfter(new_node, cardZ);
+            //Videre til næste kort du har i bunken
+            node = node->next;
+        } else if (randomNumber > 33 && randomNumber <= 66) {
+            printf("Du tilføjede kort nr. %d: %d%c foran\n", antal, cardZ.rank, cardZ.suit);
+            antal+=1;
+            push(&new_node,cardZ);
+            node = node->next;
+        } else if (randomNumber <= 33) {
+            printf("Du tilføjede kort nr. %d: %d%c bagved\n", antal, cardZ.rank, cardZ.suit);
+            antal+=1;
+            //Indsætter på adressen & for new_node.
+            insertAtEnd(&new_node, cardZ);
+            node = node->next;
+        } else{
+            printf("Trying again\n");
+        }
+        Print(new_node);
+        /*
         //Hvis du er i stand til at slette noden fra dit oprindelige kortsæt, så kan du tilføje det i det nye kortsæt.
-        int d = deleteNode(&node, keyRank, keySuit);
+        int d = deleteNode(&node, randomNumber, keySuit);
         if (d==1){
-            printf("Du tilføjede kort nr. %d som var: %d%c\n", antal, keyRank, keySuit);
+            printf("Du tilføjede kort nr. %d som var: %d%c\n", antal, randomNumber, keySuit);
             antal+=1;
             struct card cardZ;
-            cardZ.rank = keyRank;
+            cardZ.rank = randomNumber;
             cardZ.suit = keySuit;
             insertAtEnd(&new_node, cardZ);
             node = node->next;
-        }
+        */
 
      }
     return new_node;
