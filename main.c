@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include<stdlib.h>
-#include <sys/time.h>
+#include <time.h>
 
 struct card {
     int rank;
@@ -366,6 +366,67 @@ struct Node * ShuffleDeck(struct Node* node){
     return new_node;
 }
 
+void splitDeckAndRiffleShuffle(struct Node* node){
+    struct Node* split1Head = NULL;
+    struct Node* split2Head = NULL;
+    int inputSplit = 20;
+
+    struct Node* current = node;
+
+    int splitPosition = (inputSplit - 1) / 2;
+    for (int splitIncrement = 0; splitIncrement < splitPosition; splitIncrement++) {
+        current = current->next;
+    }
+
+    // Seperate deck after current.
+    split1Head = node;
+    split2Head = current->next;
+    current->next = NULL;
+
+    //tempoary heads, and the head of new deck gets defined.
+    struct Node* temp1 = split1Head;
+    struct Node* temp2 = split2Head;
+    struct Node* newHead = NULL;
+    while (1) {
+        printf("%s","Start af while loop");
+        struct card cardz;
+        cardz.rank = temp1->data.rank;
+        cardz.suit = temp1->data.suit;
+        push(&newHead,cardz);
+        temp1 = temp1->next;
+        struct card cardx;
+        cardx.rank = temp2->data.rank;
+        cardx.suit = temp2->data.suit;
+        push(&newHead,cardx);
+        temp2 = temp2->next;
+
+        printf("%s","Slutning af while loop");
+        if(temp1 == NULL){
+            printf("%s","temp1 er Null");
+            while(temp2!= NULL){
+                struct card cardx;
+                cardx.rank = temp2->data.rank;
+                cardx.suit = temp2->data.suit;
+                insertAtEnd(&newHead,cardx);
+                temp2 = temp2->next;
+            }
+            break;
+        } else if (temp2 == NULL) {
+            printf("%s", "temp2 er Null");
+            while(temp1!= NULL){
+                struct card cardz;
+                cardz.rank = temp2->data.rank;
+                cardz.suit = temp2->data.suit;
+                insertAtEnd(&newHead,cardz);
+                temp1 = temp1->next;
+            }
+            break;
+        }
+    }
+    Print(newHead);
+}
+
+
 
 
 
@@ -554,7 +615,12 @@ int commando(struct Node* head) {
     } else if (strcmp(command, "Pr") == 0) {
         Print(head);
         commando(head);
-    } else {
+    }
+    else if (strcmp(command,"SI") == 0){
+        splitDeckAndRiffleShuffle(head);
+        commando(head);
+    }
+    else {
         printf("You have to type one of the commands for the game\n");
         commando(head);
     }
@@ -563,6 +629,10 @@ int commando(struct Node* head) {
 
 
 int main() {
+
+
+
+
     /* Start with the empty list */
     //Initialisere en list som indeholder default kortsættet.
     //Af en eller anden grund, kunne jeg ikke lige få det til at fungere med, at lave kortsættet i en helt anden funktion.
