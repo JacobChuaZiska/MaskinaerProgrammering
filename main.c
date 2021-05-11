@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include<stdlib.h>
-#include <sys/time.h>
+#include <time.h>
 
 struct card {
     int rank;
@@ -139,52 +139,6 @@ void Print(struct Node* node) {
 }
 
 
-char whatCharRank(int rank) {
-    char charRank;
-    switch (rank) {
-        case 1:
-            charRank = '1';
-            break;
-        case 2:
-            charRank = '2';
-            break;
-        case 3:
-            charRank = '3';
-            break;
-        case 4:
-            charRank = '4';
-            break;
-        case 5:
-            charRank = '5';
-            break;
-        case 6:
-            charRank = '6';
-            break;
-        case 7:
-            charRank = '7';
-            break;
-        case 8:
-            charRank = '8';
-            break;
-        case 9:
-            charRank = '9';
-            break;
-            //10 er to characters, og vil derfor ikke kunne returneres som et 10 tal, men som et 1'tal. Dette skal huskes.
-        case 10:
-            charRank = 'T'; break;
-        case 11:
-            charRank = 'J';
-            break;
-        case 12:
-            charRank = 'Q';
-            break;
-        case 13:
-            charRank = 'K';
-            break;
-    }
-
-    return charRank;
-}
 
 
 void deleteNode(struct Node** head_ref, int keyRank, char keySuit) {
@@ -282,29 +236,6 @@ int randomOneOrTwo(){
     return oneOrTwo;
 }
 
-char randomSuit(){
-    int nrSuit;
-    char keySuit;
-    time_t o;
-       srand((unsigned) time(&o));
-       /* Random numbers from 0 to 3 */
-       nrSuit = rand() % 4;
-       nrSuit +=1;
-
-        switch (nrSuit) {
-            case 1:
-            keySuit = 'S'; break;
-            case 2:
-                keySuit = 'H'; break;
-            case 3:
-                keySuit = 'D'; break;
-            case 4:
-                keySuit = 'C'; break;
-        }
-
-    return keySuit;
-}
-
 
 struct Node * ShuffleDeck(struct Node* node){
     //https://www.tutorialspoint.com/c_standard_library/c_function_rand.htm
@@ -329,38 +260,27 @@ struct Node * ShuffleDeck(struct Node* node){
         cardZ.suit = node->data.suit;
 
         if (randomNumber > 66 && randomNumber <= 99 && new_node!=NULL) {
-            printf("Du tilføjede kort nr. %d som var: %d%c på 2. plads\n", antal, cardZ.rank, cardZ.suit);
+//            printf("Du tilføjede kort nr. %d som var: %d%c på 2. plads\n", antal, cardZ.rank, cardZ.suit);
             antal+=1;
             insertAfter(new_node, cardZ);
             //Videre til næste kort du har i bunken
             node = node->next;
         } else if (randomNumber > 33 && randomNumber <= 66) {
-            printf("Du tilføjede kort nr. %d: %d%c foran\n", antal, cardZ.rank, cardZ.suit);
+//            printf("Du tilføjede kort nr. %d: %d%c foran\n", antal, cardZ.rank, cardZ.suit);
             antal+=1;
             push(&new_node,cardZ);
             node = node->next;
         } else if (randomNumber <= 33) {
-            printf("Du tilføjede kort nr. %d: %d%c bagved\n", antal, cardZ.rank, cardZ.suit);
+//            printf("Du tilføjede kort nr. %d: %d%c bagved\n", antal, cardZ.rank, cardZ.suit);
             antal+=1;
             //Indsætter på adressen & for new_node.
             insertAtEnd(&new_node, cardZ);
             node = node->next;
         } else{
-            printf("Trying again\n");
+//            printf("Trying again\n");
         }
         Print(new_node);
-        /*
-        //Hvis du er i stand til at slette noden fra dit oprindelige kortsæt, så kan du tilføje det i det nye kortsæt.
-        int d = deleteNode(&node, randomNumber, keySuit);
-        if (d==1){
-            printf("Du tilføjede kort nr. %d som var: %d%c\n", antal, randomNumber, keySuit);
-            antal+=1;
-            struct card cardZ;
-            cardZ.rank = randomNumber;
-            cardZ.suit = keySuit;
-            insertAtEnd(&new_node, cardZ);
-            node = node->next;
-        */
+
 
      }
     return new_node;
@@ -607,6 +527,7 @@ int main() {
     printf("Welcome to the game, how may i help you?\n");
     printf("Write LD to load a deck from a file\n");
     printf("Write SD to save the deck to a file\n");
+    printf("Other commands include: QQ, DL, SR, Pr \n");
     commando(head);
 
 
