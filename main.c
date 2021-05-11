@@ -252,8 +252,6 @@ struct Node * ShuffleDeck(struct Node* node){
 
 //        randomNumber = randomOneOrTwo();
 
-        printf("Random nummer: %d\n", randomNumber);
-
         //Går igennem alle kortene
         struct card cardZ;
         cardZ.rank = node->data.rank;
@@ -530,7 +528,7 @@ int commando(struct Node* head) {
         //Benytter sig af den linked list kortsæt som enten allerede er i linked list(efter brugeren f.eks. allerede har spillet, og så tastet Q, men vil genstarte spille)
         //eller bare bruge det current deck, som jeg ikke ved hvad indeholder, hvis ikke brugeren har loaded er kortsæt først... Tror bare det
         //er et kortsæt der ikke er blandet.
-        printf("the fuck is this: %x", i);
+        printf("Not implemented %x", i);
         commando(head);
     } else if (strcmp(command, "Pr") == 0) {
         Print(head);
@@ -597,7 +595,7 @@ int main() {
     printf("Welcome to the game, how may i help you?\n");
     printf("Write LD to load a deck from a file\n");
     printf("Write SD to save the deck to a file\n");
-    printf("Other commands include: QQ, DL, SR, Pr \n");
+    printf("Other commands include: QQ, DL, SR, Pr, SI \n");
     commando(head);
 
 
